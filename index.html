@@ -1073,18 +1073,27 @@
     
     // 이벤트 리스너 등록
     function setupEventListeners() {
-      // 입력 필드 변경 이벤트
-      inputField.addEventListener('input', updateSendButton);
-      
-      // 입력 필드 키 이벤트
-      inputField.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
+      // 모바일 기기 감지
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    // 입력 필드 키 이벤트
+    inputField.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        // 모바일에서는 엔터로 줄바꿈, 전송은 버튼으로만
+        if (isMobile) {
+          updateSendButton();
+          return; // 모바일에서는 기본 동작(줄바꿈) 허용
+        }
+    
+        // 데스크탑에서는 Shift+Enter로 줄바꿈, Enter로 전송
+        if (!e.shiftKey) {
           e.preventDefault();
           if (!isLoading && inputField.value.trim() !== '') {
             sendMessage();
           }
         }
-      });
+      }
+    });
       
       // 전송 버튼 클릭 이벤트
       sendButton.addEventListener('click', () => {
