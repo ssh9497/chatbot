@@ -1076,6 +1076,9 @@
       // 모바일 기기 감지
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
+    // ✅ 입력값 바뀔 때마다 버튼 상태 갱신
+    inputField.addEventListener('input', updateSendButton);
+
     // 입력 필드 키 이벤트
     inputField.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
