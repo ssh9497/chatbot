@@ -1014,24 +1014,41 @@
       showLoadingIndicator();
       
       try {
-        // API 요청
-        const response = await fetch('https://12arvo8b4a.execute-api.ap-northeast-2.amazonaws.com/AI-agent/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ message: text }),
-        });
-        
-        const data = await response.json();
-        
-        // AI 메시지 생성
-        const aiMessage = {
-          id: Date.now().toString(),
-          text: data.message || data.body || '응답을 받지 못했습니다.',
-          sender: 'ai',
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        };
+  // API 요청
+  const response = await fetch('https://12arvo8b4a.execute-api.ap-northeast-2.amazonaws.com/AI-agent/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ message: text }),
+  });
+  
+  const data = await response.json();
+  
+  // 표와 설명 분리
+  let messageText = '';
+  
+  // HTML 표가 있으면 먼저 표시
+  if (data.html) {
+    messageText = data.html;
+  }
+  
+  // 설명(message)이 있고 "표" 관련 메타 설명이 아니면 표 아래에 추가
+  if (data.message) {
+    // 표가 있으면 줄바꿈 추가
+    if (data.html) {
+      messageText += '<br><br>';
+    }
+    messageText += data.message;
+  }
+  
+  // AI 메시지 생성
+  const aiMessage = {
+    id: Date.now().toString(),
+    text: messageText || '응답을 받지 못했습니다.',
+    sender: 'ai',
+    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  };
         
         // 메시지 목록에 추가
         messages.push(aiMessage);
