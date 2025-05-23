@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>ChatAssist</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,6 +31,9 @@
       padding: 1rem;
       color: white;
       box-shadow: 0 4px 12px rgba(167, 139, 250, 0.3); /* 부드러운 그림자 */
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
     
     .header-content {
@@ -230,45 +233,89 @@
       clip-path: polygon(100% 0, 100% 100%, 0 100%);
     }
     
-    /* 표 스타일 */
-    .bubble table {
+    /* 표 스타일 - 스크린샷에 맞게 디자인 및 가로 스크롤 지원 */
+    .table-container {
       width: 100%;
-      border-collapse: collapse;
+      overflow-x: auto;
       margin: 0.8rem 0;
+      -webkit-overflow-scrolling: touch; /* iOS 스크롤 부드럽게 */
+      position: relative;
+      border-radius: 4px;
+    }
+    
+    .table-container::-webkit-scrollbar {
+      height: 4px;
+    }
+    
+    .table-container::-webkit-scrollbar-thumb {
+      background-color: rgba(156, 163, 175, 0.5);
+      border-radius: 4px;
+    }
+    
+    .table-container::-webkit-scrollbar-track {
+      background-color: rgba(243, 244, 246, 0.5);
+      border-radius: 4px;
+    }
+    
+    .bubble table {
+      width: auto;
+      min-width: 100%;
+      border-collapse: collapse;
       font-size: 0.9rem;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      background-color: white;
+      border: 1px solid #e5e7eb;
+    }
+    
+    .bubble.user .table-container {
+      background-color: rgba(255, 255, 255, 0.7);
     }
     
     .bubble.user table {
-      background-color: rgba(255, 255, 255, 0.7);
       color: #4a1d31;
     }
     
     .bubble th {
-      background-color: #8b5cf6;
-      color: white;
+      background-color: #f3f4f6;
+      color: #4b5563;
       font-weight: 600;
       text-align: left;
       padding: 0.7rem 0.8rem;
+      border: 1px solid #e5e7eb;
+      white-space: nowrap;
     }
     
     .bubble.user th {
-      background-color: #db2777;
+      background-color: #fdf2f8;
+      color: #831843;
     }
     
     .bubble td {
       padding: 0.7rem 0.8rem;
-      border-bottom: 1px solid rgba(229, 231, 235, 0.8);
+      border: 1px solid #e5e7eb;
+      background-color: white;
     }
     
-    .bubble tr:nth-child(even) {
-      background-color: rgba(243, 244, 246, 0.4);
+    /* 마지막 칼럼 외에는 모두 nowrap 적용 */
+    .bubble td {
+      white-space: nowrap;
     }
     
-    .bubble tr:last-child td {
-      border-bottom: none;
+    /* 스크롤 있음을 표시하는 그라데이션 효과 */
+    .table-container::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+      width: 20px;
+      background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(249, 250, 251, 0.7));
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .table-container.has-scroll::after {
+      opacity: 1;
     }
     
     .message-text {
@@ -341,6 +388,9 @@
       padding: 1.25rem;
       background-color: white;
       border-top: 1px solid rgba(229, 231, 235, 0.8);
+      position: sticky;
+      bottom: 0;
+      z-index: 10;
     }
     
     .input-container {
@@ -376,6 +426,7 @@
       font-size: 0.95rem;
       color: #111827;
       line-height: 1.5;
+      min-height: 2.5rem;
     }
     
     .input-field::placeholder {
@@ -393,6 +444,9 @@
       justify-content: center;
       width: 2.5rem;
       height: 2.5rem;
+      min-width: 2.5rem;
+      min-height: 2.5rem;
+      touch-action: manipulation;
     }
     
     .send-button.active {
@@ -419,24 +473,62 @@
       margin-top: 0.75rem;
     }
     
-    /* 반응형 설계 */
+    /* 모바일 반응형 최적화를 위한 CSS */
     @media (max-width: 768px) {
       .bubble {
         max-width: 80%;
       }
       
       .message-area {
-        padding: 1rem;
+        padding: 0.75rem;
       }
       
       .input-area {
-        padding: 1rem;
+        padding: 0.75rem;
+      }
+      
+      .header {
+        padding: 0.75rem;
+      }
+      
+      .app-title {
+        font-size: 1.1rem;
+      }
+      
+      .avatar {
+        width: 2.2rem;
+        height: 2.2rem;
+      }
+      
+      .empty-state {
+        margin: 2rem 0;
+        padding: 1.5rem;
+      }
+      
+      .empty-icon {
+        width: 4rem;
+        height: 4rem;
+        margin-bottom: 1rem;
+      }
+      
+      .empty-icon span {
+        font-size: 1.8rem;
       }
     }
     
     @media (max-width: 640px) {
       .bubble {
         max-width: 85%;
+        padding: 0.8rem 1rem;
+        border-radius: 20px;
+      }
+      
+      .bubble.user {
+        border-bottom-right-radius: 6px;
+      }
+      
+      .bubble.ai {
+        border-bottom-left-radius: 6px;
       }
       
       .empty-title {
@@ -446,267 +538,186 @@
       .empty-description {
         font-size: 0.9rem;
       }
+      
+      .message-area {
+        padding: 0.5rem;
+      }
+      
+      .input-area {
+        padding: 0.5rem;
+      }
+      
+      .input-box {
+        padding: 0.5rem 0.75rem;
+        border-radius: 20px;
+      }
+      
+      .input-field {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+      }
+      
+      .send-button {
+        width: 2.2rem;
+        height: 2.2rem;
+        padding: 0.5rem;
+      }
+      
+      .help-text {
+        font-size: 0.7rem;
+        margin-top: 0.5rem;
+      }
+      
+      .avatar {
+        width: 2rem;
+        height: 2rem;
+        margin-left: 0.5rem;
+        margin-right: 0.5rem;
+      }
+      
+      .messages {
+        gap: 0.75rem;
+      }
+      
+      .message {
+        margin-bottom: 0.75rem;
+      }
+      
+      .timestamp {
+        font-size: 0.65rem;
+      }
+      
+      .bubble table {
+        font-size: 0.8rem;
+        margin: 0.6rem 0;
+      }
+      
+      .bubble th, .bubble td {
+        padding: 0.5rem 0.6rem;
+      }
     }
-/* 모바일 반응형 최적화를 위한 CSS */
-/* 기존 미디어 쿼리 업데이트 */
-
-@media (max-width: 768px) {
-  .bubble {
-    max-width: 80%;
-  }
-  
-  .message-area {
-    padding: 0.75rem;
-  }
-  
-  .input-area {
-    padding: 0.75rem;
-  }
-  
-  .header {
-    padding: 0.75rem;
-  }
-  
-  .app-title {
-    font-size: 1.1rem;
-  }
-  
-  .avatar {
-    width: 2.2rem;
-    height: 2.2rem;
-  }
-  
-  .empty-state {
-    margin: 2rem 0;
-    padding: 1.5rem;
-  }
-  
-  .empty-icon {
-    width: 4rem;
-    height: 4rem;
-    margin-bottom: 1rem;
-  }
-  
-  .empty-icon span {
-    font-size: 1.8rem;
-  }
-}
-
-@media (max-width: 640px) {
-  .bubble {
-    max-width: 85%;
-    padding: 0.8rem 1rem;
-    border-radius: 20px;
-  }
-  
-  .bubble.user {
-    border-bottom-right-radius: 6px;
-  }
-  
-  .bubble.ai {
-    border-bottom-left-radius: 6px;
-  }
-  
-  .empty-title {
-    font-size: 1.25rem;
-  }
-  
-  .empty-description {
-    font-size: 0.9rem;
-  }
-  
-  .message-area {
-    padding: 0.5rem;
-  }
-  
-  .input-area {
-    padding: 0.5rem;
-  }
-  
-  .input-box {
-    padding: 0.5rem 0.75rem;
-    border-radius: 20px;
-  }
-  
-  .input-field {
-    padding: 0.5rem;
-    font-size: 0.9rem;
-  }
-  
-  .send-button {
-    width: 2.2rem;
-    height: 2.2rem;
-    padding: 0.5rem;
-  }
-  
-  .help-text {
-    font-size: 0.7rem;
-    margin-top: 0.5rem;
-  }
-  
-  .avatar {
-    width: 2rem;
-    height: 2rem;
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
-  }
-  
-  .messages {
-    gap: 0.75rem;
-  }
-  
-  .message {
-    margin-bottom: 0.75rem;
-  }
-  
-  .timestamp {
-    font-size: 0.65rem;
-  }
-  
-  .bubble table {
-    font-size: 0.8rem;
-    margin: 0.6rem 0;
-  }
-  
-  .bubble th, .bubble td {
-    padding: 0.5rem 0.6rem;
-  }
-}
-
-/* 작은 모바일 화면을 위한 추가 최적화 */
-@media (max-width: 480px) {
-  .bubble {
-    max-width: 90%;
-    padding: 0.7rem 0.9rem;
-    border-radius: 18px;
-  }
-  
-  .header-content {
-    justify-content: center;
-  }
-  
-  .logo-container {
-    padding: 0.4rem;
-  }
-  
-  .logo {
-    width: 1.6rem;
-    height: 1.6rem;
-  }
-  
-  .empty-state {
-    padding: 1.2rem;
-    margin: 1.5rem 0;
-  }
-  
-  .empty-icon {
-    width: 3.5rem;
-    height: 3.5rem;
-    margin-bottom: 0.8rem;
-  }
-  
-  .empty-icon span {
-    font-size: 1.5rem;
-  }
-  
-  .empty-title {
-    font-size: 1.1rem;
-    margin-bottom: 0.6rem;
-  }
-  
-  .empty-description {
-    font-size: 0.85rem;
-    line-height: 1.4;
-  }
-  
-  .bubble table {
-    font-size: 0.75rem;
-    margin: 0.5rem 0;
-  }
-  
-  .bubble th, .bubble td {
-    padding: 0.4rem 0.5rem;
-  }
-  
-  .loading-indicator {
-    padding: 0.8rem 1rem;
-  }
-  
-  .dot {
-    width: 0.5rem;
-    height: 0.5rem;
-  }
-}
-
-/* 터치 인터페이스 최적화 */
-@media (pointer: coarse) {
-  .send-button {
-    min-width: 2.5rem;
-    min-height: 2.5rem;
-  }
-  
-  .input-box, .bubble, .send-button {
-    touch-action: manipulation;
-  }
-  
-  .input-field {
-    min-height: 2.5rem;
-  }
-  
-  .header, .input-area {
-    position: sticky;
-    z-index: 10;
-  }
-  
-  .header {
-    top: 0;
-  }
-  
-  .input-area {
-    bottom: 0;
-  }
-}
-
-/* 화면 높이가 작은 모바일 디바이스 최적화 */
-@media (max-height: 667px) {
-  .empty-state {
-    margin: 1rem 0;
-    padding: 1rem;
-  }
-  
-  .input-area {
-    padding-bottom: env(safe-area-inset-bottom, 0.5rem);
-  }
-  
-  .message-area {
-    height: calc(100vh - 120px);
-  }
-  
-  .empty-icon {
-    width: 3rem;
-    height: 3rem;
-  }
-}
-
-/* 아이폰 노치 및 다양한 모바일 디바이스 안전 영역 지원 */
-@supports (padding: max(0px)) {
-  .header {
-    padding-top: max(0.75rem, env(safe-area-inset-top));
-    padding-left: max(0.75rem, env(safe-area-inset-left));
-    padding-right: max(0.75rem, env(safe-area-inset-right));
-  }
-  
-  .input-area {
-    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
-    padding-left: max(0.75rem, env(safe-area-inset-left));
-    padding-right: max(0.75rem, env(safe-area-inset-right));
-  }
-  
-  .message-area {
-    padding-left: max(0.5rem, env(safe-area-inset-left));
-    padding-right: max(0.5rem, env(safe-area-inset-right));
-  }
-}
+    
+    /* 작은 모바일 화면을 위한 추가 최적화 */
+    @media (max-width: 480px) {
+      .bubble {
+        max-width: 90%;
+        padding: 0.7rem 0.9rem;
+        border-radius: 18px;
+      }
+      
+      .header-content {
+        justify-content: center;
+      }
+      
+      .logo-container {
+        padding: 0.4rem;
+      }
+      
+      .logo {
+        width: 1.6rem;
+        height: 1.6rem;
+      }
+      
+      .empty-state {
+        padding: 1.2rem;
+        margin: 1.5rem 0;
+      }
+      
+      .empty-icon {
+        width: 3.5rem;
+        height: 3.5rem;
+        margin-bottom: 0.8rem;
+      }
+      
+      .empty-icon span {
+        font-size: 1.5rem;
+      }
+      
+      .empty-title {
+        font-size: 1.1rem;
+        margin-bottom: 0.6rem;
+      }
+      
+      .empty-description {
+        font-size: 0.85rem;
+        line-height: 1.4;
+      }
+      
+      .bubble table {
+        font-size: 0.75rem;
+        margin: 0.5rem 0;
+      }
+      
+      .bubble th, .bubble td {
+        padding: 0.4rem 0.5rem;
+      }
+      
+      .loading-indicator {
+        padding: 0.8rem 1rem;
+      }
+      
+      .dot {
+        width: 0.5rem;
+        height: 0.5rem;
+      }
+    }
+    
+    /* 터치 인터페이스 최적화 */
+    @media (pointer: coarse) {
+      .send-button {
+        min-width: 2.5rem;
+        min-height: 2.5rem;
+      }
+      
+      .input-box, .bubble, .send-button {
+        touch-action: manipulation;
+      }
+      
+      .input-field {
+        min-height: 2.5rem;
+      }
+    }
+    
+    /* 화면 높이가 작은 모바일 디바이스 최적화 */
+    @media (max-height: 667px) {
+      .empty-state {
+        margin: 1rem 0;
+        padding: 1rem;
+      }
+      
+      .input-area {
+        padding-bottom: env(safe-area-inset-bottom, 0.5rem);
+      }
+      
+      .message-area {
+        height: calc(100vh - 120px);
+      }
+      
+      .empty-icon {
+        width: 3rem;
+        height: 3rem;
+      }
+    }
+    
+    /* 아이폰 노치 및 다양한 모바일 디바이스 안전 영역 지원 */
+    @supports (padding: max(0px)) {
+      .header {
+        padding-top: max(0.75rem, env(safe-area-inset-top));
+        padding-left: max(0.75rem, env(safe-area-inset-left));
+        padding-right: max(0.75rem, env(safe-area-inset-right));
+      }
+      
+      .input-area {
+        padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+        padding-left: max(0.75rem, env(safe-area-inset-left));
+        padding-right: max(0.75rem, env(safe-area-inset-right));
+      }
+      
+      .message-area {
+        padding-left: max(0.5rem, env(safe-area-inset-left));
+        padding-right: max(0.5rem, env(safe-area-inset-right));
+      }
+    }
   </style>
 </head>
 <body>
@@ -864,18 +875,57 @@
         let tableContent = '';
         let currentTable = '';
         let result = '';
+        let skipIntroText = false;
+        let skipOutroText = false;
+        let firstLineIndex = -1;
+        let lastTableEndIndex = -1;
+        
+        // 표 시작과 끝 위치 먼저 파악
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i].trim();
+          if (line.includes('|') && !line.match(/^[-|:]+$/)) {
+            if (firstLineIndex === -1) {
+              firstLineIndex = i;
+            }
+            lastTableEndIndex = i;
+          }
+        }
+        
+        // 표 전후의 설명 텍스트 제거 여부 결정
+        if (firstLineIndex > 0) {
+          skipIntroText = true;
+        }
+        
+        if (lastTableEndIndex < lines.length - 1) {
+          skipOutroText = true;
+        }
         
         // 각 줄 처리
         for (let i = 0; i < lines.length; i++) {
           const line = lines[i].trim();
+          
+          // 표 시작 전 텍스트 스킵
+          if (skipIntroText && i < firstLineIndex) {
+            continue;
+          }
+          
+          // 표 종료 후 텍스트 스킵
+          if (skipOutroText && i > lastTableEndIndex && lastTableEndIndex !== -1) {
+            continue;
+          }
           
           // 비어있는 줄이나 구분선만 있는 줄 건너뛰기
           if (line === '' || line === '```' || line.match(/^[-+]{3,}$/) || line.match(/^[-.]{3,}$/)) {
             // 표가 진행 중이었다면 종료
             if (tableStarted) {
               tableStarted = false;
-              result += currentTable + '</table>';
+              result += '<div class="table-container">' + currentTable + '</table></div>';
               currentTable = '';
+            }
+            
+            // 빈 줄이 아니면 일반 텍스트로 추가
+            if (line !== '' && line !== '```') {
+              result += line + '<br>';
             }
             continue;
           }
@@ -899,9 +949,9 @@
             }
             
             // 헤더 여부 결정 (이전 행이 구분선이거나 첫 번째 행인 경우)
-            const isHeader = i === 0 || 
+            const isHeader = i === firstLineIndex || 
               (i > 0 && (
-                lines[i-1].trim().match(/^[-|:]+$/) || 
+                (i > 0 && lines[i-1] && lines[i-1].trim().match(/^[-|:]+$/)) || 
                 lines[i-1].trim() === '' || 
                 !lines[i-1].includes('|')
               ));
@@ -920,7 +970,7 @@
             // 표가 진행 중이었다면 종료
             if (tableStarted) {
               tableStarted = false;
-              result += currentTable + '</table>';
+              result += '<div class="table-container">' + currentTable + '</table></div>';
               currentTable = '';
             }
             
@@ -931,7 +981,7 @@
         
         // 마지막 표 처리
         if (tableStarted) {
-          result += currentTable + '</table>';
+          result += '<div class="table-container">' + currentTable + '</table></div>';
         }
         
         return result;
@@ -1014,41 +1064,24 @@
       showLoadingIndicator();
       
       try {
-  // API 요청
-  const response = await fetch('https://12arvo8b4a.execute-api.ap-northeast-2.amazonaws.com/AI-agent/', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ message: text }),
-  });
-  
-  const data = await response.json();
-  
-  // 표와 설명 분리
-  let messageText = '';
-  
-  // HTML 표가 있으면 먼저 표시
-  if (data.html) {
-    messageText = data.html;
-  }
-  
-  // 설명(message)이 있고 "표" 관련 메타 설명이 아니면 표 아래에 추가
-  if (data.message) {
-    // 표가 있으면 줄바꿈 추가
-    if (data.html) {
-      messageText += '<br><br>';
-    }
-    messageText += data.message;
-  }
-  
-  // AI 메시지 생성
-  const aiMessage = {
-    id: Date.now().toString(),
-    text: messageText || '응답을 받지 못했습니다.',
-    sender: 'ai',
-    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-  };
+        // API 요청
+        const response = await fetch('엔드포인트', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ message: text }),
+        });
+        
+        const data = await response.json();
+        
+        // AI 메시지 생성
+        const aiMessage = {
+          id: Date.now().toString(),
+          text: data.message || data.body || '응답을 받지 못했습니다.',
+          sender: 'ai',
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
         
         // 메시지 목록에 추가
         messages.push(aiMessage);
@@ -1091,41 +1124,16 @@
     // 이벤트 리스너 등록
     function setupEventListeners() {
       // 모바일 기기 감지
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-    // ✅ 입력값 바뀔 때마다 버튼 상태 갱신
-    inputField.addEventListener('input', updateSendButton);
-
-    // 입력 필드 키 이벤트
-    inputField.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        // 모바일에서는 엔터로 줄바꿈, 전송은 버튼으로만
-        if (isMobile) {
-          updateSendButton();
-          return; // 모바일에서는 기본 동작(줄바꿈) 허용
-        }
-    
-        // 데스크탑에서는 Shift+Enter로 줄바꿈, Enter로 전송
-        if (!e.shiftKey) {
-          e.preventDefault();
-          if (!isLoading && inputField.value.trim() !== '') {
-            sendMessage();
-          }
-        }
-      }
-    });
-      
-      // 전송 버튼 클릭 이벤트
-      sendButton.addEventListener('click', () => {
-        if (!isLoading && inputField.value.trim() !== '') {
-          sendMessage();
-        }
-      });
-      
-      // 자동 리사이즈 입력 필드
+      // 입력값 바뀔 때마다 버튼 상태 갱신
       inputField.addEventListener('input', function() {
+        updateSendButton();
+        
+        // 텍스트 영역 높이 자동 조절
         this.style.height = 'auto';
         this.style.height = (this.scrollHeight) + 'px';
+        
         // 최대 높이 제한
         if (this.scrollHeight > 150) {
           this.style.overflowY = 'auto';
@@ -1134,6 +1142,57 @@
           this.style.overflowY = 'hidden';
         }
       });
+
+      // 입력 필드 키 이벤트
+      inputField.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          // 모바일에서는 Enter 키로 줄바꿈
+          if (isMobile) {
+            // 줄바꿈 기본 동작 유지 (preventDefault 호출 안함)
+            return;
+          }
+          
+          // 데스크탑에서는 Shift+Enter로 줄바꿈, Enter로 전송
+          if (!e.shiftKey) {
+            e.preventDefault();
+            if (!isLoading && inputField.value.trim() !== '') {
+              sendMessage();
+            }
+          }
+        }
+      });
+      
+      // 전송 버튼 클릭 이벤트
+      sendButton.addEventListener('click', () => {
+        if (!isLoading && inputField.value.trim() !== '') {
+          sendMessage();
+        }
+      });
+      
+      // 모바일 특화 이벤트: 입력 필드 포커스시 스크롤 최하단
+      inputField.addEventListener('focus', () => {
+        // 약간의 지연 추가 (키보드가 올라오는 시간 고려)
+        setTimeout(scrollToBottom, 300);
+      });
+      
+      // 디바이스 방향 변경 이벤트
+      window.addEventListener('resize', () => {
+        // 메시지가 있으면 스크롤 최하단
+        if (messages.length > 0) {
+          setTimeout(scrollToBottom, 100);
+        }
+      });
+      
+      // 터치 스크롤 최적화
+      messageArea.addEventListener('touchstart', (e) => {
+        // 스크롤 중 터치 이벤트 전파 방지
+        e.stopPropagation();
+      }, { passive: true });
+      
+      // 모바일에서 help-text 업데이트
+      if (isMobile) {
+        document.querySelector('.help-text').textContent = '전송하려면 버튼을 누르세요';
+      }
     }
     
     // 초기화
@@ -1141,10 +1200,123 @@
       initializeMessages();
       setupEventListeners();
       updateSendButton();
+      
+      // 모바일 뷰포트 높이 설정 (100vh 이슈 해결)
+      function setVH() {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+      }
+      
+      // 초기 및 리사이즈시 뷰포트 높이 설정
+      setVH();
+      window.addEventListener('resize', () => {
+        setVH();
+        // 테이블 스크롤 상태 체크
+        checkTableScroll();
+      });
+      
+      // 초기 테이블 스크롤 체크
+      setTimeout(checkTableScroll, 100);
     }
     
     // 페이지 로드 시 초기화
     document.addEventListener('DOMContentLoaded', initialize);
+    
+    // 테이블 스크롤 체크 및 클래스 추가
+    function checkTableScroll() {
+      const tableContainers = document.querySelectorAll('.table-container');
+      tableContainers.forEach(container => {
+        if (container.scrollWidth > container.clientWidth) {
+          container.classList.add('has-scroll');
+        } else {
+          container.classList.remove('has-scroll');
+        }
+        
+        // 스크롤 이벤트 리스너 추가
+        container.addEventListener('scroll', function() {
+          if (this.scrollLeft + this.clientWidth >= this.scrollWidth - 10) {
+            this.classList.remove('has-scroll');
+          } else {
+            this.classList.add('has-scroll');
+          }
+        });
+      });
+    }
+    
+    // 메시지 렌더링 함수에 테이블 스크롤 체크 추가
+    function renderMessages() {
+      // 메시지 목록 초기화
+      initializeMessages();
+      
+      // 로딩 인디케이터 제거
+      const loadingElement = document.querySelector('.loading');
+      if (loadingElement) {
+        loadingElement.remove();
+      }
+      
+      // 각 메시지 렌더링
+      messages.forEach(message => {
+        addMessageToDOM(message);
+      });
+      
+      // 스크롤을 최하단으로 이동
+      scrollToBottom();
+      
+      // 테이블 스크롤 체크
+      setTimeout(checkTableScroll, 100);
+    }
+    
+    // DOM에 메시지 추가 후 테이블 스크롤 체크
+    function addMessageToDOM(message) {
+      // 이미 렌더링된 메시지는 건너뜀
+      if (document.getElementById(`message-${message.id}`)) {
+        return;
+      }
+      
+      // 빈 상태 숨기기
+      emptyState.style.display = 'none';
+      
+      // 메시지 요소 생성
+      const messageElement = document.createElement('div');
+      messageElement.id = `message-${message.id}`;
+      messageElement.className = `message ${message.sender}`;
+      
+      // 메시지 내용 구성
+      let messageHTML = '';
+      
+      // AI 아바타 (AI 메시지인 경우에만 표시)
+      if (message.sender === 'ai') {
+        messageHTML += `
+          <div class="avatar ai">
+            <span>AI</span>
+          </div>
+        `;
+      }
+      
+      // 메시지 버블
+      messageHTML += `
+        <div class="bubble ${message.sender}">
+          <div class="message-text">${formatMessageText(message.text)}</div>
+          <div class="timestamp ${message.sender}">${message.timestamp}</div>
+        </div>
+      `;
+      
+      // 사용자 아바타 (사용자 메시지인 경우에만 표시)
+      if (message.sender === 'user') {
+        messageHTML += `
+          <div class="avatar user">
+            <span>나</span>
+          </div>
+        `;
+      }
+      
+      // HTML 설정 및 메시지 컨테이너에 추가
+      messageElement.innerHTML = messageHTML;
+      messagesContainer.appendChild(messageElement);
+      
+      // 테이블 스크롤 체크
+      setTimeout(checkTableScroll, 100);
+    }
   </script>
 </body>
 </html>
